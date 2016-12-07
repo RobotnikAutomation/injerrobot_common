@@ -1,0 +1,48 @@
+<?xml version="1.0"?>
+<robot name="injerrobot_platform" xmlns:xacro="http://www.ros.org/wiki/xacro">
+  <xacro:property name="PI" value="3.1415926535897931"/>
+  <!-- ***************** -->
+  <!-- Imported elements -->
+  <!-- ***************** -->
+  <!-- First we import all posible elements defined in the urdf.xacro files. All these elements are defined as macro:xacros -->
+  <!-- Import Kuka KR6900 -->
+  <xacro:include filename="$(find kuka_kr6_support)/urdf/kr6r900sixx_macro.xacro" />
+
+  <!-- Import UR10 -->
+  <xacro:include filename="$(find ur_description)/urdf/ur10.urdf.xacro"/>
+
+  <!-- Import common gazebo elements -->
+  <xacro:include filename="$(find injerrobot_description)/robots/common.gazebo.xacro" />
+
+  <xacro:property name="load_ur" value="false" />
+
+  <link name="world" />
+
+  <!-- Fix left arm to world link -->
+  <joint name="left_arm_base_joint" type="fixed">
+    <origin xyz="0 0.5 0" rpy="0 0 0 "/>  <!-- TODO: set correct orientation -->
+    <parent link="world"/>
+    <child link="left_arm_base_link"/>
+  </joint>
+
+
+  <!-- Fix right arm to world link -->
+  <joint name="right_arm_base_joint" type="fixed">
+    <origin xyz="0 -0.5 0" rpy="0 0 0 "/>  <!-- TODO: set correct orientation -->
+    <parent link="world"/>
+    <child link="right_arm_base_link"/>
+  </joint>
+
+  <xacro:unless value="${load_ur}">
+    <xacro:kuka_kr6r900sixx prefix="right_arm_"/>
+    <xacro:kuka_kr6r900sixx prefix="left_arm_"/>
+  </xacro:unless>
+  <xacro:if value="${load_ur}">
+    <xacro:ur10_robot prefix="right_arm_" joint_limited="true"/>
+    <xacro:ur10_robot prefix="left_arm_" joint_limited="true"/>
+  </xacro:if>
+  
+
+  <xacro:ros_control />
+
+</robot>

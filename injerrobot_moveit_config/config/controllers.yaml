@@ -1,0 +1,57 @@
+#ros_control_namespace: /
+#controller_list:
+#  - name: coordinated_position_trajectory_controller
+#    action_ns: follow_joint_trajectory
+#    type: FollowJointTrajectory
+#    default: true
+#    joints:
+#      - 'left_arm_joint_a1'
+#      - 'left_arm_joint_a2'
+#      - 'left_arm_joint_a3'
+#      - 'left_arm_joint_a4'
+#      - 'left_arm_joint_a5'
+#      - 'left_arm_joint_a6'
+#      - 'right_arm_joint_a1'
+#      - 'right_arm_joint_a2'
+#      - 'right_arm_joint_a3'
+#      - 'right_arm_joint_a4'
+#      - 'right_arm_joint_a5'
+#      - 'right_arm_joint_a6'
+#
+#controller_list:
+#  - name: coordinated_position_trajectory_controller
+#    action_ns: follow_joint_trajectory
+#    type: FollowJointTrajectory
+#    joints:
+#      - 'left_arm_joint_a1'
+#      - 'left_arm_joint_a2'
+#      - 'left_arm_joint_a3'
+#      - 'left_arm_joint_a4'
+#      - 'left_arm_joint_a5'
+#      - 'left_arm_joint_a6'
+#      - 'right_arm_joint_a1'
+#      - 'right_arm_joint_a2'
+#      - 'right_arm_joint_a3'
+#      - 'right_arm_joint_a4'
+#      - 'right_arm_joint_a5'
+#      - 'right_arm_joint_a6'
+#  - name: left_arm_position_trajectory_controller
+#    action_ns: follow_joint_trajectory
+#    type: FollowJointTrajectory
+#    joints:
+#      - 'left_arm_joint_a1'
+#      - 'left_arm_joint_a2'
+#      - 'left_arm_joint_a3'
+#      - 'left_arm_joint_a4'
+#      - 'left_arm_joint_a5'
+#      - 'left_arm_joint_a6'
+#  - name: right_arm_position_trajectory_controller
+#    action_ns: follow_joint_trajectory
+#    type: FollowJointTrajectory
+#    joints:
+#      - 'right_arm_joint_a1'
+#      - 'right_arm_joint_a2'
+#      - 'right_arm_joint_a3'
+#      - 'right_arm_joint_a4'
+#      - 'right_arm_joint_a5'
+#      - 'right_arm_joint_a6'
