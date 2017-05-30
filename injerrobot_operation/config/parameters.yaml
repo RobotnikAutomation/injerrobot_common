@@ -1,0 +1,72 @@
+rootstock:
+  arm_ip: 192.168.0.1
+  arm_port: 8888
+  conveyor:
+    pose: [0, 0, 0, 0, 0, 0] # pose wrt 
+    grid:
+      x: 2
+      y: 2
+      x_step: 0.1
+      y_step: 0.1
+      x_first: true
+  cutter:
+    pose: [[0, 0, 0, 0, 0, 0],[0, 0, 0, 0, 0, 0]]  # x,y,z,r,p,y: the robot will go to each position before reaching the last
+  clipper:
+    pose: [[0, 0, 0, 0, 0, 0],[0, 0, 0, 0, 0, 0]]
+  disposer:
+    pose: [[0, 0, 0, 0, 0, 0],[0, 0, 0, 0, 0, 0]]
+  healer:
+    pose: [0, 0, 0, 0, 0, 0] # pose wrt 
+    grid:
+      x: 2
+      y: 2
+      x_step: -0.1
+      y_step: 0.1
+      x_first: false
+  input:
+    gripper: 1  # a plant is picked by the gripper
+    cutter: 2   # cutter detects plant
+    conveyor: 3 # plants are at the conveyor position
+    clipper: 4  
+  output:
+    gripper: 1  # if active, gripper is closed. if not, is open
+    cutter: 2   # if active, the cutter cuts.
+    conveyor: 3 # if active, the conveyor moves
+    clipper: 4  # if active, the clipper dispenses a clip
+
+scion:
+  arm_ip: 192.168.0.1
+  arm_port: 8888
+  conveyor:
+    pose: [0, 0, 0, 0, 0, 0] # pose wrt 
+    grid:
+      x: 2
+      y: 2
+      x_step: 0.1
+      y_step: 0.1
+      x_first: true
+  cutter:
+    pose: [[0, 0, 0, 0, 0, 0],[0, 0, 0, 0, 0, 0]]  # x,y,z,r,p,y: the robot will go to each position before reaching the last
+  clipper:
+    pose: [[0, 0, 0, 0, 0, 0],[0, 0, 0, 0, 0, 0]]
+  disposer:
+    pose: [[0, 0, 0, 0, 0, 0],[0, 0, 0, 0, 0, 0]]
+#  healer:
+#    pose: [0, 0, 0, 0, 0, 0] # pose wrt 
+#    grid:
+#      x: 2
+#      y: 2
+#      x_step: -0.1
+#      y_step: 0.1
+#      x_first: false
+  input:
+    gripper: 1  # a plant is picked by the gripper
+    cutter: 2   # cutter detects plant
+    conveyor: 3 # plants are at the conveyor position
+    clipper: 4  
+  output:
+    gripper: 1  # if active, gripper is closed. if not, is open
+    cutter: 2   # if active, the cutter cuts.
+    conveyor: 3 # if active, the conveyor moves
+    clipper: 4  # if active, the clipper dispenses a clip
+
