@@ -1,25 +1,25 @@
 rootstock:
   arm_ip: 192.168.0.1
   arm_port: 8888
-  pick:
-    pose: [[0.8, 0.2, 0.5, 0, 0, 0]] # pose wrt 
+  feeder:
+    pose: [[[0.302, 0.438, 0.435], [2.492, 1.570, -2.198]], [[0.297, 0.669, 0.435], [2.701, 1.570, -1.989]]] # pose wrt 
     grid:
-      x: 2
-      y: 2
-      x_step: 0.1
-      y_step: 0.1
+      X: 2
+      Y: 2
+      x_step: -0.05
+      y_step: -0.05
       x_first: true
   cut:
-    pose: [[0, 0, 0, 0, 0, 0],[0, 0, 0, 0, 0, 0]]  # x,y,z,r,p,y: the robot will go to each position before reaching the last
+    pose: [[[0.475, -0.000, 0.887], [2.490, 1.571, 2.490]],[[0.692, -0.000, 0.887],[-1.281, 1.571, -1.281]]]  # x,y,z,r,p,y: the robot will go to each position before reaching the last
   clip:
-    pose: [[0, 0, 0, 0, 0, 0],[0, 0, 0, 0, 0, 0]]
+    pose: [[[0.692, 0.000, 0.555],[0.218, 1.571, 0.219]]]
   dispose:
-    pose: [[0, 0, 0, 0, 0, 0],[0, 0, 0, 0, 0, 0]]
-  heal:
-    pose: [0, 0, 0, 0, 0, 0] # pose wrt 
+    pose: [[[0,0,0],[0,0,0]]]
+  dispense:
+    pose: [[[0.692, -0.369, 0.556], [-2.766, 1.571, -2.766]]] # pose wrt 
     grid:
-      x: 2
-      y: 2
+      X: 2
+      Y: 2
       x_step: -0.1
       y_step: 0.1
       x_first: false
@@ -37,11 +37,11 @@ rootstock:
 scion:
   arm_ip: 192.168.0.1
   arm_port: 8888
-  pick:
+  feeder:
     pose: [[0, 0, 0, 0, 0, 0]] # pose wrt 
     grid:
-      x: 2
-      y: 2
+      X: 2
+      Y: 2
       x_step: 0.1
       y_step: 0.1
       x_first: true

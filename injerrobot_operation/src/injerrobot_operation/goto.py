@@ -3,6 +3,10 @@
 import sys
 
 import rospy
+
+import tf
+import tf.transformations
+
 import smach
 import smach_ros
 
@@ -10,7 +14,7 @@ import moveit_commander
 import moveit_msgs.msg
 import geometry_msgs.msg
 
-import tf.transformations
+
 
 # define state GoTo
 class GoTo(smach.State):
@@ -22,17 +26,17 @@ class GoTo(smach.State):
         
     def execute(self, userdata):
         rospy.loginfo('Executing state GOTO')
-        print userdata.params
+        #print userdata.params
         
         for pose in self.params['pose']:            
             goal = geometry_msgs.msg.PoseStamped()
             goal.header.frame_id = 'left_arm_base_link'
             
-            goal.pose.position.x = pose[0]
-            goal.pose.position.y = pose[1]
-            goal.pose.position.z = pose[2]
+            goal.pose.position.x = pose[0][0]
+            goal.pose.position.y = pose[0][1]
+            goal.pose.position.z = pose[0][2]
             
-            tf_quat = tf.transformations.quaternion_from_euler(pose[3], pose[4], pose[5])
+            tf_quat = tf.transformations.quaternion_from_euler(pose[1][0], pose[1][1], pose[1][2])
             goal.pose.orientation.x = tf_quat[0]
             goal.pose.orientation.y = tf_quat[1]
             goal.pose.orientation.z = tf_quat[2]
