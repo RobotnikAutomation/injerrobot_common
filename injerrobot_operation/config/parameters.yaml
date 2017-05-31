@@ -1,21 +1,21 @@
 rootstock:
   arm_ip: 192.168.0.1
   arm_port: 8888
-  conveyor:
-    pose: [0, 0, 0, 0, 0, 0] # pose wrt 
+  pick:
+    pose: [[0.8, 0.2, 0.5, 0, 0, 0]] # pose wrt 
     grid:
       x: 2
       y: 2
       x_step: 0.1
       y_step: 0.1
       x_first: true
-  cutter:
+  cut:
     pose: [[0, 0, 0, 0, 0, 0],[0, 0, 0, 0, 0, 0]]  # x,y,z,r,p,y: the robot will go to each position before reaching the last
-  clipper:
+  clip:
     pose: [[0, 0, 0, 0, 0, 0],[0, 0, 0, 0, 0, 0]]
-  disposer:
+  dispose:
     pose: [[0, 0, 0, 0, 0, 0],[0, 0, 0, 0, 0, 0]]
-  healer:
+  heal:
     pose: [0, 0, 0, 0, 0, 0] # pose wrt 
     grid:
       x: 2
@@ -37,28 +37,20 @@ rootstock:
 scion:
   arm_ip: 192.168.0.1
   arm_port: 8888
-  conveyor:
-    pose: [0, 0, 0, 0, 0, 0] # pose wrt 
+  pick:
+    pose: [[0, 0, 0, 0, 0, 0]] # pose wrt 
     grid:
       x: 2
       y: 2
       x_step: 0.1
       y_step: 0.1
       x_first: true
-  cutter:
+  cut:
     pose: [[0, 0, 0, 0, 0, 0],[0, 0, 0, 0, 0, 0]]  # x,y,z,r,p,y: the robot will go to each position before reaching the last
-  clipper:
+  clip:
     pose: [[0, 0, 0, 0, 0, 0],[0, 0, 0, 0, 0, 0]]
-  disposer:
+  dispose:
     pose: [[0, 0, 0, 0, 0, 0],[0, 0, 0, 0, 0, 0]]
-#  healer:
-#    pose: [0, 0, 0, 0, 0, 0] # pose wrt 
-#    grid:
-#      x: 2
-#      y: 2
-#      x_step: -0.1
-#      y_step: 0.1
-#      x_first: false
   input:
     gripper: 1  # a plant is picked by the gripper
     cutter: 2   # cutter detects plant

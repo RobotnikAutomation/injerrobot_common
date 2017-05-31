@@ -10,7 +10,10 @@
   
   <!-- load the controllers -->
   <node name="kuka_control_loader" pkg="controller_manager" type="controller_manager" respawn="false"
-    output="screen" args="load left_arm_position_trajectory_controller right_arm_position_trajectory_controller coordinated_position_trajectory_controller"/>                      
+    output="screen" args="load coordinated_position_trajectory_controller"/>
+  
+  <node name="kuka_control_spawner" pkg="controller_manager" type="controller_manager" respawn="false"
+    output="screen" args="spawn left_arm_position_trajectory_controller right_arm_position_trajectory_controller"/>                      
                         
 
 </launch>
