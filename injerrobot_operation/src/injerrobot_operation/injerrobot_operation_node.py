@@ -4,6 +4,7 @@ import rospy
 import smach
 import smach_ros
 
+import moveit_msgs.msg
 
 ### XXX: check the way to import things
 from injerrobot_operation.place import Place
@@ -30,20 +31,51 @@ def main():
     
     io_mod = io_module.IoModule(sim = True)
 
+    orientation_constraint = moveit_msgs.msg.OrientationConstraint()
+    orientation_constraint.header.frame_id = 'left_arm_link_6'
+    orientation_constraint.link_name = 'left_arm_link_6'
+    orientation_constraint.orientation.w = 1.0
+    orientation_constraint.absolute_x_axis_tolerance = 0.1
+    orientation_constraint.absolute_y_axis_tolerance = 0.1
+    orientation_constraint.absolute_z_axis_tolerance = 3.14
+    orientation_constraint.weight = 1.0
+    
+    joint_contraint = moveit_msgs.msg.JointConstraint()
+    joint_contraint.joint_name = 'left_arm_joint_a2'
+    joint_contraint.position = -0.35
+    joint_contraint.tolerance_above = 1.2
+    joint_contraint.tolerance_below = 1.2
+    joint_contraint.weight = 1
+    
+    path_constraints = moveit_msgs.msg.Constraints()
+    path_constraints.name = "keep horizontal"
+    path_constraints.orientation_constraints.append(orientation_constraint)
+    path_constraints.joint_constraints.append(joint_contraint)
+
+    #path_constraints = None
+
     goto_pick_feeder = GoToGrid(sim = True)
     goto_pick_feeder.move_group = MoveGroupInterface("left_arm", "left_arm_base_link")
+    goto_pick_feeder.move_group.setPlannerId('RRTConnectkConfigDefault')
+    goto_pick_feeder.move_group.setPathConstraints(path_constraints)
     goto_pick_feeder.params = sm.userdata.params['feeder'] ### XXX: name: feeder???
 
     goto_cut = GoTo(sim = True)
     goto_cut.move_group = MoveGroupInterface("left_arm", "left_arm_base_link")
+    goto_cut.move_group.setPlannerId('RRTConnectkConfigDefault')
+    goto_cut.move_group.setPathConstraints(path_constraints)
     goto_cut.params = sm.userdata.params['cut']
 
     goto_place_clip = GoTo(sim = True)
     goto_place_clip.move_group = MoveGroupInterface("left_arm", "left_arm_base_link")
+    goto_place_clip.move_group.setPlannerId('RRTConnectkConfigDefault')
+    goto_place_clip.move_group.setPathConstraints(path_constraints)
     goto_place_clip.params = sm.userdata.params['clip']
     
     goto_dispense = GoTo(sim = True)
     goto_dispense.move_group = MoveGroupInterface("left_arm", "left_arm_base_link")
+    goto_dispense.move_group.setPlannerId('RRTConnectkConfigDefault')
+    goto_dispense.move_group.setPathConstraints(path_constraints)
     goto_dispense.params = sm.userdata.params['dispense']
 
     

@@ -31,8 +31,10 @@ class GoToGrid(smach.State):
     def execute(self, userdata):
         rospy.loginfo('Executing state GOTOGRID')
         
+        rospy.loginfo('Current X: %d, Current Y: %d' % (self._current_x, self._current_y))
+        
         if (self.params['grid']['x_first'] == True and self._current_y >= self.params['grid']['Y']) or (self.params['grid']['x_first'] == False and self._current_x >= self.params['grid']['X']):
-                return 'grid_completed'
+            return 'grid_completed'
         
         pose = self.params['pose'][0]
         
@@ -62,7 +64,8 @@ class GoToGrid(smach.State):
         goal.pose.orientation.z = tf_quat[2]
         goal.pose.orientation.w = tf_quat[3]
         
-        self.move_group.moveToPose(goal, 'left_arm_tool0')
+        #self.move_group.moveToPose(goal, 'left_arm_tool0')
+        self.move_group.moveToPose(goal, 'left_arm_link_6')
         rospy.loginfo("move to pose")
         rospy.sleep(1.)
         

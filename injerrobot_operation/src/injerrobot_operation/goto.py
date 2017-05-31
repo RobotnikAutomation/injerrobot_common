@@ -42,7 +42,7 @@ class GoTo(smach.State):
             goal.pose.orientation.z = tf_quat[2]
             goal.pose.orientation.w = tf_quat[3]
             
-            self.move_group.moveToPose(goal, 'left_arm_tool0')
+            self.move_group.moveToPose(goal, 'left_arm_link_6')
             rospy.loginfo("move to pose")
             rospy.sleep(1.)
             
