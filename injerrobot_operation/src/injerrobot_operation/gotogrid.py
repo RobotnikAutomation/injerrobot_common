@@ -38,6 +38,15 @@ class GoToGrid(smach.State):
         
         pose = self.params['pose'][0]
         
+        
+        try:
+            self._listener.waitForTransform(self.move_group.getGripperFrame(), self.move_group.getFixedFrame(), rospy.Time(0.), rospy.Duration(4.))
+            (trans, rot) = self._listener.lookupTransform(self.move_group.getGripperFrame(), self.move_group.getFixedFrame(), rospy.Time(0.))
+            rospy.loginfo("current pose: %f %f %f" % (trans[0], trans[1], trans[2]))
+        except tf.Exception:
+            rospy.logwarn("couldn't get pose")
+        
+        
         tf_quat = tf.transformations.quaternion_from_euler(pose[1][0], pose[1][1], pose[1][2])
         
         transformation = np.dot(tf.transformations.translation_matrix(pose[0]), tf.transformations.quaternion_matrix(tf_quat))
@@ -52,7 +61,7 @@ class GoToGrid(smach.State):
         rospy.loginfo("must go to: %f %f %f" % (grid_point_transformed[0], grid_point_transformed[1], grid_point_transformed[2]))
         
         goal = geometry_msgs.msg.PoseStamped()
-        goal.header.frame_id = 'left_arm_base_link'
+        goal.header.frame_id = self.move_group.getGripperFrame()
         
         goal.pose.position.x = grid_point_transformed[0]
         goal.pose.position.y = grid_point_transformed[1]
@@ -65,14 +74,17 @@ class GoToGrid(smach.State):
         goal.pose.orientation.w = tf_quat[3]
         
         #self.move_group.moveToPose(goal, 'left_arm_tool0')
-        self.move_group.moveToPose(goal, 'left_arm_link_6')
+        #self.move_group.moveToPose(goal, 'left_arm_link_6')
+        self.move_group.moveToPose(goal)
         rospy.loginfo("move to pose")
         rospy.sleep(1.)
         
-        (trans, rot) = self._listener.lookupTransform('left_arm_link_6', 'left_arm_link_1', rospy.Time(0))
-        
-        rospy.loginfo("current pose: %f %f %f" % (trans[0], trans[1], trans[2]))
-        
+        try:
+            self._listener.waitForTransform(self.move_group.getGripperFrame(), self.move_group.getFixedFrame(), rospy.Time(0.), rospy.Duration(4.))
+            (trans, rot) = self._listener.lookupTransform(self.move_group.getGripperFrame(), self.move_group.getFixedFrame(), rospy.Time(0.))
+            rospy.loginfo("current pose: %f %f %f" % (trans[0], trans[1], trans[2]))
+        except tf.Exception:
+            rospy.logwarn("couldn't get pose")        
         
         if self.params['grid']['x_first']:
             self._current_x += 1

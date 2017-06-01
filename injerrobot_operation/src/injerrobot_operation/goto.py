@@ -30,7 +30,7 @@ class GoTo(smach.State):
         
         for pose in self.params['pose']:            
             goal = geometry_msgs.msg.PoseStamped()
-            goal.header.frame_id = 'left_arm_base_link'
+            goal.header.frame_id = self.move_group.getFixedFrame()
             
             goal.pose.position.x = pose[0][0]
             goal.pose.position.y = pose[0][1]
@@ -42,10 +42,9 @@ class GoTo(smach.State):
             goal.pose.orientation.z = tf_quat[2]
             goal.pose.orientation.w = tf_quat[3]
             
-            self.move_group.moveToPose(goal, 'left_arm_link_6')
+            self.move_group.moveToPose(goal)
             rospy.loginfo("move to pose")
             rospy.sleep(1.)
-            
         
         return 'reached'
             
