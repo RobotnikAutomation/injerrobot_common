@@ -9,7 +9,7 @@ class Pick(smach.State):
     def __init__(self, sim):
         self._sim = sim
         
-        smach.State.__init__(self, outcomes=['picked','failed'], input_keys=['params'])
+        smach.State.__init__(self, outcomes=['picked','failed','no_plant'], input_keys=['params'])
         
         self._wait_for_gripper = 1.0
         
@@ -22,8 +22,8 @@ class Pick(smach.State):
 
 
         if self.io_module.get_input(userdata.params['input']['gripper']) != True:
-            rospy.logerr('PICK: there is not plant. Failed')
-            return 'failed'
+            rospy.logerr('PICK: there is not plant. ')
+            return 'no_plant'
 
         rospy.loginfo('PICK: plant detected, closing gripper')
         self.io_module.set_output(userdata.params['output']['gripper'], True)

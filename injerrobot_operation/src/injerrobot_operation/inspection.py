@@ -4,16 +4,14 @@ import rospy
 import smach
 import smach_ros
 
-# define state Inspect
+# define state Inspection
 class Inspection(smach.State):
-    def __init__(self):
-        smach.State.__init__(self, outcomes=['good','bad'])
-        self.counter = 0
+    def __init__(self, sim):
+        self._sim = sim
+        
+        smach.State.__init__(self, outcomes=['good','bad','failed'])
 
     def execute(self, userdata):
-        rospy.loginfo('Executing state INSPECT')
-        if self.counter < 3:
-            self.counter += 1
-            return 'good'
-        else:
-            return 'bad'
+        rospy.loginfo('Executing state INSPECTION')
+        return 'good'
+        #return 'bad'

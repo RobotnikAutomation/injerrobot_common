@@ -69,12 +69,17 @@ def main():
     io_mod = io_module.IoModule(sim = True)
     
     rootstock_params = rospy.get_param('/rootstock') ### XXX: this must be on userdata??
-    
+  
     path_constraints = None
     
     rootstock_arm_move_group = MoveGroupInterface("left_arm", fixed_frame = "left_arm_base_link", gripper_frame = "left_arm_link_6")
     rootstock_arm_move_group.setPlannerId('RRTConnectkConfigDefault')
     rootstock_arm_move_group.setPathConstraints(path_constraints)
+
+    rootstock_goto_init = GoTo(sim = True)
+    rootstock_goto_init.move_group = rootstock_arm_move_group
+    rootstock_goto_init.params = rootstock_params['init']
+    rootstock_goto_init.label = 'rootstock'
 
     rootstock_goto_pick_feeder = GoToGrid(sim = True)
     rootstock_goto_pick_feeder.move_group = rootstock_arm_move_group
@@ -96,6 +101,16 @@ def main():
     rootstock_goto_dispense.params = rootstock_params['dispense']
     rootstock_goto_dispense.label = 'rootstock'
     
+    rootstock_goto_inspection = GoTo(sim = True)
+    rootstock_goto_inspection.move_group = rootstock_arm_move_group
+    rootstock_goto_inspection.params = rootstock_params['inspection']
+    rootstock_goto_inspection.label = 'rootstock'
+    
+    rootstock_goto_reject = GoTo(sim = True)
+    rootstock_goto_reject.move_group = rootstock_arm_move_group
+    rootstock_goto_reject.params = rootstock_params['reject']
+    rootstock_goto_reject.label = 'rootstock'
+    
     rootstock_pick = Pick(sim = True)
     rootstock_pick.io_module = io_mod
     rootstock_pick.label = 'rootstock'
@@ -112,6 +127,14 @@ def main():
     rootstock_clip.io_module = io_mod
     rootstock_clip.label = 'rootstock'
     
+    rootstock_inspection = Inspection(sim = True)
+    rootstock_inspection.io_module = io_mod
+    rootstock_inspection.label = 'rootstock'
+    
+    rootstock_reject = Reject(sim = True)
+    rootstock_reject.io_module = io_mod
+    rootstock_reject.label = 'rootstock'
+    
     rootstock_dispense = Dispense(sim = True)
     rootstock_dispense.io_module = io_mod
     rootstock_dispense.label = 'rootstock'
@@ -122,6 +145,11 @@ def main():
     scion_arm_move_group = MoveGroupInterface("right_arm", fixed_frame = "right_arm_base_link", gripper_frame = "right_arm_link_6")
     scion_arm_move_group.setPlannerId('RRTConnectkConfigDefault')
     scion_arm_move_group.setPathConstraints(path_constraints)
+
+    scion_goto_init = GoTo(sim = True)
+    scion_goto_init.move_group = scion_arm_move_group
+    scion_goto_init.params = scion_params['init']
+    scion_goto_init.label = 'scion'
 
     scion_goto_pick_feeder = GoToGrid(sim = True)
     scion_goto_pick_feeder.move_group = scion_arm_move_group
@@ -163,7 +191,8 @@ def main():
                                             'grid_completed': 'completed'})
                                             
         smach.StateMachine.add('PICK', rootstock_pick, 
-                               transitions={'picked':'GOTO_CUT', 
+                               transitions={'picked':'GOTO_CUT',
+                                            'no_plant': 'GOTO_PICK',
                                             'failed':'failed'})
                                             
         smach.StateMachine.add('GOTO_CUT', rootstock_goto_cut, 
@@ -196,7 +225,8 @@ def main():
                                             'grid_completed': 'completed'})
                                             
         smach.StateMachine.add('PICK', scion_pick, 
-                               transitions={'picked':'GOTO_CUT', 
+                               transitions={'picked':'GOTO_CUT',
+                                            'no_plant': 'GOTO_PICK',
                                             'failed':'failed'})
                                             
         smach.StateMachine.add('GOTO_CUT', scion_goto_cut, 
@@ -229,16 +259,42 @@ def main():
 
     sm_full_operation = smach.StateMachine(outcomes=['failed', 'completed'])
     sm_full_operation.userdata.params = rootstock_params
+    
     with sm_full_operation:
+        smach.StateMachine.add('INIT_ROOTSTOCK', rootstock_goto_init,
+                                transitions={'reached':'INIT_SCION', 
+                                'failed':'failed'})
+                                
+        smach.StateMachine.add('INIT_SCION', scion_goto_init,
+                                transitions={'reached':'CONCURRENT_PLACE', 
+                                'failed':'failed'})
+                                
         smach.StateMachine.add('CONCURRENT_PLACE', sm_concurrent_place,
                                transitions={'placed':'CLIP',
                                 'completed': 'completed',
                                 'failed':'failed'})
                                
         smach.StateMachine.add('CLIP', rootstock_clip, 
-                                transitions={'clipped':'GOTO_DISPENSE', 
+                                transitions={'clipped':'GOTO_INSPECTION', 
+                                'failed':'failed'})
+                                
+        smach.StateMachine.add('GOTO_INSPECTION', rootstock_goto_inspection, 
+                                transitions={'reached':'INSPECTION', 
+                                'failed':'failed'})
+
+        smach.StateMachine.add('INSPECTION', rootstock_inspection, 
+                                transitions={'good':'GOTO_DISPENSE',
+                                'bad': 'GOTO_REJECT',
+                                'failed':'failed'})
+
+        smach.StateMachine.add('GOTO_REJECT', rootstock_goto_reject, 
+                                transitions={'reached':'REJECT',
                                 'failed':'failed'})
     
+        smach.StateMachine.add('REJECT', rootstock_reject, 
+                                transitions={'rejected':'CONCURRENT_PLACE', 
+                                'failed':'failed'})
+                                    
         smach.StateMachine.add('GOTO_DISPENSE', rootstock_goto_dispense, 
                                 transitions={'reached':'DISPENSE', 
                                 'failed':'failed'})
@@ -247,11 +303,12 @@ def main():
                                 transitions={'dispensed':'CONCURRENT_PLACE', 
                                 'failed':'failed'})
     
-    sis = smach_ros.IntrospectionServer('server_name', sm_full_operation, '/SM_ROOT')
+    sm_to_execute = sm_scion
+    sis = smach_ros.IntrospectionServer('server_name', sm_to_execute, '/SM_ROOT')
     sis.start()
 
     ## Execute SMACH plan
-    outcome = sm_full_operation.execute()
+    outcome = sm_to_execute.execute()
     rospy.spin()
     sis.stop()
 

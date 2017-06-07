@@ -25,7 +25,8 @@ class Cut(smach.State):
             rospy.logerr('CUT: there is not plant. Failed')
             return 'failed'
 
-        rospy.loginfo('CUT: plant detected, closing gripper')
+        rospy.loginfo('CUT: plant detected, cutting')
+        
         self.io_module.set_output(userdata.params['output']['cutter'], True)
         
         rospy.sleep(self._wait_for_cutter)
