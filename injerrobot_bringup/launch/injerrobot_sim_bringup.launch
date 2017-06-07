@@ -9,13 +9,45 @@
     <!-- uploads robot_description and runs robot_state_publisher -->
     <include file="$(find injerrobot_description)/launch/injerrobot_state.launch" />
 
-    <include file="$(find injerrobot_gazebo)/launch/injerrobot.launch">
-        <arg name="debug" value="$(arg debug)" />
-        <arg name="gui" value="$(arg gui)" />
-        <arg name="gazebo_world" value="$(arg gazebo_world)"/>
-    </include>
-
-    <include file="$(find injerrobot_control)/launch/kuka_control.launch" />
+    <group ns="left_arm">
+    	<rosparam file="$(find injerrobot_bringup)/config/left_arm_rsi_params.yaml" command="load" />
+        
+		<node name="left_kuka_hardware_interface" pkg="kuka_rsi_hw_interface"
+          type="kuka_hardware_interface_node" respawn="false"
+            output="screen"
+            required="true"/>
     
+        <!-- Load joint controller configurations from YAML file to parameter server -->
+        <rosparam file="$(find injerrobot_bringup)/config/left_arm_joint_names.yaml" command="load"/>
+        <rosparam file="$(find injerrobot_bringup)/config/left_arm_controllers.yaml" command="load"/>
+        <!-- Load standard kuka controller joint names from YAML file to parameter server -->
+    	<node name="controller_spawner" pkg="controller_manager" type="spawner" respawn="false" output="screen"
+        	args="position_trajectory_controller joint_state_controller --shutdown-timeout 1"/>
+    
+        <node name="kuka_rsi_simulator" pkg="kuka_rsi_simulator" type="kuka_rsi_simulator" args="127.0.0.1 49152" />
+    </group>
+    
+	<group ns="right_arm">
+    	<rosparam file="$(find injerrobot_bringup)/config/right_arm_rsi_params.yaml" command="load" />
+        
+		<node name="right_kuka_hardware_interface" pkg="kuka_rsi_hw_interface"
+          type="kuka_hardware_interface_node" respawn="false"
+            output="screen"
+            required="true"/>
+    
+        <!-- Load joint controller configurations from YAML file to parameter server -->
+        <rosparam file="$(find injerrobot_bringup)/config/right_arm_joint_names.yaml" command="load"/>
+        <rosparam file="$(find injerrobot_bringup)/config/right_arm_controllers.yaml" command="load"/>
+        <!-- Load standard kuka controller joint names from YAML file to parameter server -->
+    	<node name="controller_spawner" pkg="controller_manager" type="spawner" respawn="false" output="screen"
+        	args="position_trajectory_controller joint_state_controller --shutdown-timeout 1"/>
+        <node name="kuka_rsi_simulator" pkg="kuka_rsi_simulator" type="kuka_rsi_simulator" args="127.0.0.1 49153" />
+    </group>
+
+    <!--include file="$(find injerrobot_control)/launch/kuka_control.launch" /-->
+   	<node name="joint_state_republisher" pkg="joint_state_publisher" type="joint_state_publisher">
+		<rosparam param="source_list">[/left_arm/joint_states, /right_arm/joint_states]</rosparam>
+	</node>
+ 
 
 </launch>

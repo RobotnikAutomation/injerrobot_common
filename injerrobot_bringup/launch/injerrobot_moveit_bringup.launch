@@ -1,0 +1,12 @@
+<?xml version="1.0"?>
+<launch>
+
+    <group ns="left_arm">
+        <include file="$(find injerrobot_rootstock_moveit_config)/launch/injerrobot_rootstock_moveit.launch" />
+    </group>
+    
+	<group ns="right_arm">
+        <include file="$(find injerrobot_scion_moveit_config)/launch/injerrobot_scion_moveit.launch" />
+    </group>
+
+</launch>
