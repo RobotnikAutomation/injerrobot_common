@@ -8,29 +8,133 @@
   <!-- Import Kuka KR6900 -->
   <xacro:include filename="$(find kuka_kr6_support)/urdf/kr6r900sixx_macro.xacro" />
 
+  <xacro:include filename="$(find injerrobot_description)/urdf/conveyor.urdf.xacro" />
+  <xacro:include filename="$(find injerrobot_description)/urdf/gripper.urdf.xacro" />
+  <xacro:include filename="$(find injerrobot_description)/urdf/clipper.urdf.xacro" />
+  
   <!-- Import common gazebo elements -->
   <xacro:include filename="$(find injerrobot_description)/robots/common.gazebo.xacro" />
 
   <link name="world" />
 
   <!-- Fix left arm to world link -->
-  <joint name="left_arm_base_joint" type="fixed">
-    <origin xyz="0 0.5 0" rpy="0 0 0 "/>  <!-- TODO: set correct orientation -->
+  <joint name="left_arm_floor_joint" type="fixed"> <!-- R1, rootstock -->
+    <origin xyz="0 0 0" rpy="0 0 0 "/> 
     <parent link="world"/>
+    <child link="left_arm_floor_link"/>
+  </joint>
+  
+  <link name="left_arm_floor_link">
+    <visual>
+        <origin xyz="0 0 0.5" rpy="0 0 0"/>
+        <geometry>
+            <box size="0.4 0.3 1.0" />
+        </geometry>
+        <material name="grey">
+            <color rgba="0.5 0.5 0.5 1.0"/>
+        </material>
+  </visual>
+  
+  <collision>
+    <origin xyz="0 0 0.5" rpy="0 0 0"/>
+        <geometry>
+            <box size="0.4 0.3 1.0" />
+        </geometry>
+        <material name="red">
+            <color rgba="1.0 0.0 0.0 1.0"/>
+        </material>
+    </collision>
+  </link>
+  
+  <joint name="left_arm_base_joint" type="fixed"> <!-- R1, rootstock -->
+    <origin xyz="0 0 1.0" rpy="0 0 0 "/> 
+    <parent link="left_arm_floor_link"/>
     <child link="left_arm_base_link"/>
   </joint>
 
-
   <!-- Fix right arm to world link -->
-  <joint name="right_arm_base_joint" type="fixed">
-    <origin xyz="0 -0.5 0" rpy="0 0 0 "/>  <!-- TODO: set correct orientation -->
+  <joint name="right_arm_floor_joint" type="fixed"> <!-- R2, scion -->
+    <origin xyz="1.9 0 0.0" rpy="0 0 -${PI/2.0}"/>
     <parent link="world"/>
+    <child link="right_arm_floor_link"/>
+  </joint>
+
+  <link name="right_arm_floor_link">
+    <visual>
+        <origin xyz="0 0 0.5" rpy="0 0 0"/>
+        <geometry>
+            <box size="0.4 0.3 1.0" />
+        </geometry>
+        <material name="grey">
+            <color rgba="0.5 0.5 0.5 1.0"/>
+        </material>
+  </visual>
+  <collision>
+    <origin xyz="0 0 0.5" rpy="0 0 0"/>
+        <geometry>
+            <box size="0.4 0.3 1.0" />
+        </geometry>
+        <material name="red">
+            <color rgba="1.0 0.0 0.0 1.0"/>
+        </material>
+    </collision>
+  </link>
+
+  <joint name="right_arm_base_joint" type="fixed"> <!-- R1, rootstock -->
+    <origin xyz="0 0 1.0" rpy="0 0 0 "/> 
+    <parent link="right_arm_floor_link"/>
     <child link="right_arm_base_link"/>
   </joint>
 
+
+
+  <!-- Fix left arm to world link -->
+  <joint name="clipper_floor_joint" type="fixed"> <!-- R1, rootstock -->
+    <origin xyz="1.0 0.5 0" rpy="0 0 1.5707 "/> 
+    <parent link="world"/>
+    <child link="clipper_floor_link"/>
+  </joint>
+  
+  <link name="clipper_floor_link">
+    <visual>
+        <origin xyz="0 0 0.5" rpy="0 0 0"/>
+        <geometry>
+            <box size="0.4 0.3 1.0" />
+        </geometry>
+        <material name="grey">
+            <color rgba="0.5 0.5 0.5 1.0"/>
+        </material>
+  </visual>
+  </link>
+  
+    <joint name="clipper_base_joint" type="fixed"> <!-- R1, rootstock -->
+    <origin xyz="0 0 1.0" rpy="0 0 0 "/> 
+    <parent link="clipper_floor_link"/>
+    <child link="clipper_base_link"/>
+  </joint>
+  <link name="clipper_base_link" />
+
+  <xacro:clipper prefix="" parent="clipper_base_link"/>
+
+
+
   <xacro:kuka_kr6r900sixx prefix="right_arm_"/>
+  <xacro:gripper prefix="right_arm_" parent="right_arm_link_6" />
   
   <xacro:kuka_kr6r900sixx prefix="left_arm_"/>
+  <xacro:gripper prefix="left_arm_" parent="left_arm_link_6" />
+   
+  <xacro:conveyor prefix="rootstock_feeder_" parent="left_arm_floor_link">
+        <origin xyz="-0.318 0.800 0" rpy="0 0 0"/>
+  </xacro:conveyor>
+
+  <xacro:conveyor prefix="rootstock_dispenser_" parent="left_arm_floor_link">
+        <origin xyz="-0.318 -0.800 0" rpy="0 0 0"/>
+  </xacro:conveyor>
+
+  <xacro:conveyor prefix="scion_feeder_" parent="right_arm_floor_link">
+        <origin xyz="0.239 0.712 0" rpy="0 0 0"/>
+  </xacro:conveyor>
 
   <xacro:ros_control />
 

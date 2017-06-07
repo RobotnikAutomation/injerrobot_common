@@ -1,0 +1,19 @@
+<?xml version="1.0"?>
+<robot name="injerrobot_platform" xmlns:xacro="http://www.ros.org/wiki/xacro">
+  <xacro:property name="PI" value="3.1415926535897931"/>
+  <!-- ***************** -->
+  <!-- Imported elements -->
+  <!-- ***************** -->
+  <!-- First we import all posible elements defined in the urdf.xacro files. All these elements are defined as macro:xacros -->
+  <!-- Import Kuka KR6900 -->
+  <xacro:include filename="$(find kuka_kr6_support)/urdf/kr6r900sixx_macro.xacro" />
+
+  <!-- Import common gazebo elements -->
+  <xacro:include filename="$(find injerrobot_description)/robots/common.gazebo.xacro" />
+  
+  <xacro:kuka_kr6r900sixx prefix="left_arm_"/>
+
+  <xacro:ros_control />
+
+</robot>
+
