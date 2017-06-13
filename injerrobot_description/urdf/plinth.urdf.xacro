@@ -1,0 +1,48 @@
+<?xml version="1.0"?>
+<robot name="plinth" xmlns:xacro="http://www.ros.org/wiki/xacro">
+  <xacro:property name="PI" value="3.1415926535897931"/>
+  <!-- ***************** -->
+  <!-- Imported elements -->
+  <!-- ***************** -->
+  <!-- First we import all posible elements defined in the urdf.xacro files. All these elements are defined as macro:xacros -->
+  
+  <xacro:macro name="plinth" params="prefix parent height *origin">
+
+  <joint name="${prefix}plinth_base_joint" type="fixed">
+      <xacro:insert_block name="origin" />
+      <parent link="${parent}"/>
+      <child link="${prefix}plinth_base_link"/>
+  </joint>
+  
+  <link name="${prefix}plinth_base_link">
+    <visual>
+        <origin xyz="0 0 ${height/2.0}" rpy="0 0 0"/>
+        <geometry>
+            <box size="0.4 0.3 ${height}" />
+        </geometry>
+        <material name="gray">
+            <color rgba="0.5 0.5 0.5 1.0"/>
+        </material>
+    </visual>
+    <collision>
+        <origin xyz="0 0 ${height/2.0}" rpy="0 0 0"/>
+        <geometry>
+            <box size="0.4 0.3 ${height}" />
+        </geometry>
+        <material name="gray">
+            <color rgba="0.5 0.5 0.5 1.0"/>
+        </material>
+    </collision>
+  </link>
+  
+  <joint name="${prefix}plinth_joint" type="fixed">
+      <origin xyz="0 0 ${height}" rpy="0 0 0"/>
+      <parent link="${prefix}plinth_base_link"/>
+      <child link="${prefix}plinth_link"/>
+  </joint>
+
+  <link name="${prefix}plinth_link" />
+      
+  </xacro:macro>
+
+</robot>
