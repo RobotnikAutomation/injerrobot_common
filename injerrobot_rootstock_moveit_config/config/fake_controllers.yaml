@@ -1,0 +1,12 @@
+controller_list:
+  - name: fake_left_arm_controller
+    joints:
+      - left_arm_joint_a1
+      - left_arm_joint_a2
+      - left_arm_joint_a3
+      - left_arm_joint_a4
+      - left_arm_joint_a5
+      - left_arm_joint_a6
+  - name: fake_left_eef_controller
+    joints:
+      []

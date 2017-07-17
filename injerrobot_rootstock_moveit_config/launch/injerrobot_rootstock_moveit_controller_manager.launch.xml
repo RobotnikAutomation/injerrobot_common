@@ -1,0 +1,14 @@
+<launch>
+  
+  <arg name="moveit_controller_manager" 
+        default="moveit_ros_control_interface::MoveItMultiControllerManager"/>
+
+  <!-- arg name="moveit_controller_manager"
+        default="moveit_simple_controller_manager/MoveItSimpleControllerManager"/ -->
+
+  <param name="moveit_controller_manager"
+         value="$(arg moveit_controller_manager)"/>
+
+  <rosparam file="$(find injerrobot_rootstock_moveit_config)/config/controllers.yaml"/>
+
+</launch>

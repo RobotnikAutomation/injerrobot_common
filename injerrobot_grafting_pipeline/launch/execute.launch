@@ -1,0 +1,10 @@
+<?xml version="1.0"?>
+<launch>
+
+    <arg name="load_config" default="true"/>
+    	
+    <rosparam file="$(find injerrobot_grafting_pipeline)/config/parameters.yaml" command="load" if="$(arg load_config)"/>
+        
+    <node name="grafting" pkg="injerrobot_grafting_pipeline" type="injerrobot_grafting_pipeline_node.py" />
+
+</launch>
