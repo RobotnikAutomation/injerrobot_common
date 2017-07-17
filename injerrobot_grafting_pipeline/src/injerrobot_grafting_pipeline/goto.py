@@ -28,7 +28,10 @@ class GoTo(smach.State):
         rospy.loginfo('Executing state GOTO')
         #print userdata.params
         
-        for pose in self.params['pose']:            
+#        if self.params.has_key('joints'):
+#            
+        
+        for pose in self.params['poses']:            
             goal = geometry_msgs.msg.PoseStamped()
             goal.header.frame_id = self.move_group.getFixedFrame()
             
@@ -42,6 +45,9 @@ class GoTo(smach.State):
             goal.pose.orientation.z = tf_quat[2]
             goal.pose.orientation.w = tf_quat[3]
             
+            
+            rospy.loginfo("must go to: %f %f %f, %f %f %f %f" % (goal.pose.position.x, goal.pose.position.y, goal.pose.position.z, goal.pose.orientation.x, goal.pose.orientation.y, goal.pose.orientation.z, goal.pose.orientation.w))
+
             self.move_group.moveToPose(goal)
             rospy.loginfo("move to pose")
             rospy.sleep(1.)

@@ -7,15 +7,15 @@ import smach_ros
 import moveit_msgs.msg
 
 ### XXX: check the way to import things
-from injerrobot_operation.place import Place
-from injerrobot_operation.pick import Pick
-from injerrobot_operation.goto import GoTo
-from injerrobot_operation.gotogrid import GoToGrid
-from injerrobot_operation.cut import Cut
-from injerrobot_operation.clip import Clip
-from injerrobot_operation.inspection import Inspection
-from injerrobot_operation.dispense import Dispense
-from injerrobot_operation.reject import Reject
+from injerrobot_grafting_pipeline.place import Place
+from injerrobot_grafting_pipeline.pick import Pick
+from injerrobot_grafting_pipeline.goto import GoTo
+from injerrobot_grafting_pipeline.gotogrid import GoToGrid
+from injerrobot_grafting_pipeline.cut import Cut
+from injerrobot_grafting_pipeline.clip import Clip
+from injerrobot_grafting_pipeline.inspection import Inspection
+from injerrobot_grafting_pipeline.dispense import Dispense
+from injerrobot_grafting_pipeline.reject import Reject
 
 import io_module 
 
@@ -64,15 +64,16 @@ def outcome_cb(outcome_map):
     return None
 
 def main():
-    rospy.init_node('injerrobot_operation')
+    rospy.init_node('injerrobot_grafting_pipeline')
     
     io_mod = io_module.IoModule(sim = True)
-    
+   
     rootstock_params = rospy.get_param('/rootstock') ### XXX: this must be on userdata??
   
-    path_constraints = None
+    path_constraints = create_path_contraints()
     
-    rootstock_arm_move_group = MoveGroupInterface("left_arm", fixed_frame = "left_arm_base_link", gripper_frame = "left_arm_link_6")
+
+    rootstock_arm_move_group = MoveGroupInterface(group = "left_arm", action_ns = "/move_group", fixed_frame = "left_arm_base_link", gripper_frame = "left_arm_link_6")
     rootstock_arm_move_group.setPlannerId('RRTConnectkConfigDefault')
     rootstock_arm_move_group.setPathConstraints(path_constraints)
 
@@ -141,8 +142,11 @@ def main():
     
 
     ### XXX: right arm? why not scion arm?? the same applies for the left arm
+    
+    path_constraints = None
+    
     scion_params = rospy.get_param('/scion') ### XXX: this must be on userdata??
-    scion_arm_move_group = MoveGroupInterface("right_arm", fixed_frame = "right_arm_base_link", gripper_frame = "right_arm_link_6")
+    scion_arm_move_group = MoveGroupInterface(group = "right_arm", action_ns = "/move_group", fixed_frame = "right_arm_base_link", gripper_frame = "right_arm_link_6")
     scion_arm_move_group.setPlannerId('RRTConnectkConfigDefault')
     scion_arm_move_group.setPathConstraints(path_constraints)
 
@@ -256,20 +260,40 @@ def main():
     with sm_concurrent_place:
         smach.Concurrence.add('PLACE_ROOTSTOCK', sm_rootstock)
         smach.Concurrence.add('PLACE_SCION', sm_scion)
-
-    sm_full_operation = smach.StateMachine(outcomes=['failed', 'completed'])
-    sm_full_operation.userdata.params = rootstock_params
+        
+        
     
-    with sm_full_operation:
+    sm_sequential_place = smach.StateMachine(outcomes=['failed', 'completed', 'placed'])
+    sm_sequential_place.userdata.params = rootstock_params
+    
+    with sm_sequential_place:
+        smach.StateMachine.add('PLACE_ROOTSTOCK', sm_rootstock,
+                                transitions = {'placed': 'PLACE_SCION',
+                                 'failed':'failed',
+                                 'completed':'PLACE_SCION',
+                                 'rejected':'PLACE_ROOTSTOCK'})
+
+        smach.StateMachine.add('PLACE_SCION', sm_scion,
+                                transitions = {'placed': 'placed',
+                                 'failed':'failed',
+                                 'completed':'completed',
+                                 'rejected':'PLACE_SCION'})
+
+    sm_full_grafting_pipeline = smach.StateMachine(outcomes=['failed', 'completed'])
+    sm_full_grafting_pipeline.userdata.params = rootstock_params
+    
+    
+
+    with sm_full_grafting_pipeline:
         smach.StateMachine.add('INIT_ROOTSTOCK', rootstock_goto_init,
                                 transitions={'reached':'INIT_SCION', 
                                 'failed':'failed'})
                                 
         smach.StateMachine.add('INIT_SCION', scion_goto_init,
-                                transitions={'reached':'CONCURRENT_PLACE', 
+                                transitions={'reached':'PLACE', 
                                 'failed':'failed'})
                                 
-        smach.StateMachine.add('CONCURRENT_PLACE', sm_concurrent_place,
+        smach.StateMachine.add('PLACE', sm_sequential_place,
                                transitions={'placed':'CLIP',
                                 'completed': 'completed',
                                 'failed':'failed'})
@@ -292,7 +316,7 @@ def main():
                                 'failed':'failed'})
     
         smach.StateMachine.add('REJECT', rootstock_reject, 
-                                transitions={'rejected':'CONCURRENT_PLACE', 
+                                transitions={'rejected':'PLACE', 
                                 'failed':'failed'})
                                     
         smach.StateMachine.add('GOTO_DISPENSE', rootstock_goto_dispense, 
@@ -300,10 +324,10 @@ def main():
                                 'failed':'failed'})
     
         smach.StateMachine.add('DISPENSE', rootstock_dispense, 
-                                transitions={'dispensed':'CONCURRENT_PLACE', 
+                                transitions={'dispensed':'PLACE', 
                                 'failed':'failed'})
     
-    sm_to_execute = sm_scion
+    sm_to_execute = sm_full_grafting_pipeline
     sis = smach_ros.IntrospectionServer('server_name', sm_to_execute, '/SM_ROOT')
     sis.start()
 

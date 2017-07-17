@@ -1,5 +1,5 @@
 def main():
-    rospy.init_node('injerrobot_operation')
+    rospy.init_node('injerrobot_grafting_pipeline')
 
     # Create a SMACH state machine
     sm_rootstock = smach.StateMachine(outcomes=['dispensed', 'rejected', 'failed', 'completed'])

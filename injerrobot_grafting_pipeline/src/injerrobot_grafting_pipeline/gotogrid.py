@@ -27,8 +27,38 @@ class GoToGrid(smach.State):
         self._current_y = 0
         
         self._listener = tf.listener.TransformListener()
-        
+    
     def execute(self, userdata):
+        return self.execute_grid(userdata)
+        
+    def execute_simple(self, userdata):
+        rospy.loginfo('Executing state GOTOGRID_SIMPLE')
+        #print userdata.params
+        
+        for pose in self.params['poses']:            
+            goal = geometry_msgs.msg.PoseStamped()
+            goal.header.frame_id = self.move_group.getFixedFrame()
+            
+            goal.pose.position.x = pose[0][0]
+            goal.pose.position.y = pose[0][1]
+            goal.pose.position.z = pose[0][2]
+            
+            tf_quat = tf.transformations.quaternion_from_euler(pose[1][0], pose[1][1], pose[1][2])
+            goal.pose.orientation.x = tf_quat[0]
+            goal.pose.orientation.y = tf_quat[1]
+            goal.pose.orientation.z = tf_quat[2]
+            goal.pose.orientation.w = tf_quat[3]
+            
+            
+            rospy.loginfo("must go to: %f %f %f, %f %f %f %f" % (goal.pose.position.x, goal.pose.position.y, goal.pose.position.z, goal.pose.orientation.x, goal.pose.orientation.y, goal.pose.orientation.z, goal.pose.orientation.w))
+
+            self.move_group.moveToPose(goal)
+            rospy.loginfo("move to pose")
+            rospy.sleep(1.)
+        
+        return 'reached'
+        
+    def execute_grid(self, userdata):
         rospy.loginfo('Executing state GOTOGRID')
         
         rospy.loginfo('Current X: %d, Current Y: %d' % (self._current_x, self._current_y))
@@ -36,7 +66,7 @@ class GoToGrid(smach.State):
         if (self.params['grid']['x_first'] == True and self._current_y >= self.params['grid']['Y']) or (self.params['grid']['x_first'] == False and self._current_x >= self.params['grid']['X']):
             return 'grid_completed'
         
-        pose = self.params['pose'][0]
+        pose = self.params['poses'][0]
         
         
         try:
@@ -58,10 +88,9 @@ class GoToGrid(smach.State):
         
         rospy.loginfo("origin: %f %f %f" % (pose[0][0], pose[0][1], pose[0][2]))
         grid_point_transformed = list(np.dot(transformation, np.array([grid_point.x, grid_point.y, grid_point.z, 1.0])))[:3]
-        rospy.loginfo("must go to: %f %f %f" % (grid_point_transformed[0], grid_point_transformed[1], grid_point_transformed[2]))
         
         goal = geometry_msgs.msg.PoseStamped()
-        goal.header.frame_id = self.move_group.getGripperFrame()
+        goal.header.frame_id = self.move_group.getFixedFrame()
         
         goal.pose.position.x = grid_point_transformed[0]
         goal.pose.position.y = grid_point_transformed[1]
@@ -73,8 +102,8 @@ class GoToGrid(smach.State):
         goal.pose.orientation.z = tf_quat[2]
         goal.pose.orientation.w = tf_quat[3]
         
-        #self.move_group.moveToPose(goal, 'left_arm_tool0')
-        #self.move_group.moveToPose(goal, 'left_arm_link_6')
+        rospy.loginfo("must go to: %f %f %f, %f %f %f %f" % (goal.pose.position.x, goal.pose.position.y, goal.pose.position.z, goal.pose.orientation.x, goal.pose.orientation.y, goal.pose.orientation.z, goal.pose.orientation.w))
+        
         self.move_group.moveToPose(goal)
         rospy.loginfo("move to pose")
         rospy.sleep(1.)
