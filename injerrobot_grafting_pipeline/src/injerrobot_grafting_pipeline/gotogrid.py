@@ -25,36 +25,44 @@ class GoToGrid(smach.State):
         self._sim = sim
         self._current_x = 0
         self._current_y = 0
+        self.constraints = None
         
         self._listener = tf.listener.TransformListener()
     
     def execute(self, userdata):
-        return self.execute_grid(userdata)
+        return self.execute_simple(userdata)
         
     def execute_simple(self, userdata):
         rospy.loginfo('Executing state GOTOGRID_SIMPLE')
         #print userdata.params
+        self.move_group.setPathConstraints(self.constraints)
         
-        for pose in self.params['poses']:            
-            goal = geometry_msgs.msg.PoseStamped()
-            goal.header.frame_id = self.move_group.getFixedFrame()
-            
-            goal.pose.position.x = pose[0][0]
-            goal.pose.position.y = pose[0][1]
-            goal.pose.position.z = pose[0][2]
-            
-            tf_quat = tf.transformations.quaternion_from_euler(pose[1][0], pose[1][1], pose[1][2])
-            goal.pose.orientation.x = tf_quat[0]
-            goal.pose.orientation.y = tf_quat[1]
-            goal.pose.orientation.z = tf_quat[2]
-            goal.pose.orientation.w = tf_quat[3]
-            
-            
-            rospy.loginfo("must go to: %f %f %f, %f %f %f %f" % (goal.pose.position.x, goal.pose.position.y, goal.pose.position.z, goal.pose.orientation.x, goal.pose.orientation.y, goal.pose.orientation.z, goal.pose.orientation.w))
-
-            self.move_group.moveToPose(goal)
+        if self.params.has_key('joints'):
+            self.move_group.moveToJointPoseCommander(self.joint_names,self.params['joints'][0], max_velocity_scaling_factor=0.5)
             rospy.loginfo("move to pose")
             rospy.sleep(1.)
+            
+        
+        #for pose in self.params['poses']:
+            #goal = geometry_msgs.msg.PoseStamped()
+            #goal.header.frame_id = self.move_group.getFixedFrame()
+            
+            #goal.pose.position.x = pose[0][0]
+            #goal.pose.position.y = pose[0][1]
+            #goal.pose.position.z = pose[0][2]
+            
+            #tf_quat = tf.transformations.quaternion_from_euler(pose[1][0], pose[1][1], pose[1][2])
+            #goal.pose.orientation.x = tf_quat[0]
+            #goal.pose.orientation.y = tf_quat[1]
+            #goal.pose.orientation.z = tf_quat[2]
+            #goal.pose.orientation.w = tf_quat[3]
+            
+            
+            #rospy.loginfo("must go to: %f %f %f, %f %f %f %f" % (goal.pose.position.x, goal.pose.position.y, goal.pose.position.z, goal.pose.orientation.x, goal.pose.orientation.y, goal.pose.orientation.z, goal.pose.orientation.w))
+
+            #print self.move_group.moveToPoseCommander(goal, max_velocity_scaling_factor=0.2)
+            #rospy.loginfo("move to pose")
+            #rospy.sleep(1.)
         
         return 'reached'
         
@@ -68,8 +76,9 @@ class GoToGrid(smach.State):
         
         pose = self.params['poses'][0]
         
+        self.move_group.setPathConstraints(self.constraints)
         
-        try:
+        try: # only to show the current position
             self._listener.waitForTransform(self.move_group.getGripperFrame(), self.move_group.getFixedFrame(), rospy.Time(0.), rospy.Duration(4.))
             (trans, rot) = self._listener.lookupTransform(self.move_group.getGripperFrame(), self.move_group.getFixedFrame(), rospy.Time(0.))
             rospy.loginfo("current pose: %f %f %f" % (trans[0], trans[1], trans[2]))
@@ -108,7 +117,7 @@ class GoToGrid(smach.State):
         rospy.loginfo("move to pose")
         rospy.sleep(1.)
         
-        try:
+        try: # only to show the current position
             self._listener.waitForTransform(self.move_group.getGripperFrame(), self.move_group.getFixedFrame(), rospy.Time(0.), rospy.Duration(4.))
             (trans, rot) = self._listener.lookupTransform(self.move_group.getGripperFrame(), self.move_group.getFixedFrame(), rospy.Time(0.))
             rospy.loginfo("current pose: %f %f %f" % (trans[0], trans[1], trans[2]))

@@ -20,6 +20,7 @@ import geometry_msgs.msg
 class GoTo(smach.State):
     def __init__(self, sim):
         self._sim = sim
+        self.constraints = None
         
         smach.State.__init__(self, outcomes=['reached','failed'], input_keys=['params'])
         
@@ -28,29 +29,35 @@ class GoTo(smach.State):
         rospy.loginfo('Executing state GOTO')
         #print userdata.params
         
-#        if self.params.has_key('joints'):
-#            
+        #self.move_group.moveToJointPoseCommander(self.joint_names,self.params['joints'][0], max_velocity_scaling_factor=0.2)
         
-        for pose in self.params['poses']:            
-            goal = geometry_msgs.msg.PoseStamped()
-            goal.header.frame_id = self.move_group.getFixedFrame()
-            
-            goal.pose.position.x = pose[0][0]
-            goal.pose.position.y = pose[0][1]
-            goal.pose.position.z = pose[0][2]
-            
-            tf_quat = tf.transformations.quaternion_from_euler(pose[1][0], pose[1][1], pose[1][2])
-            goal.pose.orientation.x = tf_quat[0]
-            goal.pose.orientation.y = tf_quat[1]
-            goal.pose.orientation.z = tf_quat[2]
-            goal.pose.orientation.w = tf_quat[3]
-            
-            
-            rospy.loginfo("must go to: %f %f %f, %f %f %f %f" % (goal.pose.position.x, goal.pose.position.y, goal.pose.position.z, goal.pose.orientation.x, goal.pose.orientation.y, goal.pose.orientation.z, goal.pose.orientation.w))
-
-            self.move_group.moveToPose(goal)
+        self.move_group.setPathConstraints(self.constraints)
+        if self.params.has_key('joints'):
+            self.move_group.moveToJointPoseCommander(self.joint_names,self.params['joints'][0], max_velocity_scaling_factor=0.5)
             rospy.loginfo("move to pose")
             rospy.sleep(1.)
+            
+        
+        #for pose in self.params['poses']:
+            #goal = geometry_msgs.msg.PoseStamped()
+            #goal.header.frame_id = self.move_group.getFixedFrame()
+            
+            #goal.pose.position.x = pose[0][0]
+            #goal.pose.position.y = pose[0][1]
+            #goal.pose.position.z = pose[0][2]
+            
+            #tf_quat = tf.transformations.quaternion_from_euler(pose[1][0], pose[1][1], pose[1][2])
+            #goal.pose.orientation.x = tf_quat[0]
+            #goal.pose.orientation.y = tf_quat[1]
+            #goal.pose.orientation.z = tf_quat[2]
+            #goal.pose.orientation.w = tf_quat[3]
+            
+            
+            #rospy.loginfo("must go to: %f %f %f, %f %f %f %f" % (goal.pose.position.x, goal.pose.position.y, goal.pose.position.z, goal.pose.orientation.x, goal.pose.orientation.y, goal.pose.orientation.z, goal.pose.orientation.w))
+
+            #print self.move_group.moveToPoseCommander(goal, max_velocity_scaling_factor=0.2)
+            #rospy.loginfo("move to pose")
+            #rospy.sleep(1.)
         
         return 'reached'
             
