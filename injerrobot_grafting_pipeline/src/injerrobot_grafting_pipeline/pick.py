@@ -19,7 +19,7 @@ class Pick(smach.State):
         
         smach.State.__init__(self, outcomes=['picked','failed','no_plant'], input_keys=['params'])
         
-        self._wait_for_gripper = 2.0
+        self._wait_for_gripper = 1.0
         self._gripper = baxter_interface.Gripper("right")
         
     def execute(self, userdata):

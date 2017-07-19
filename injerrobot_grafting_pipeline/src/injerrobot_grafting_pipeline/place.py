@@ -4,7 +4,13 @@ import rospy
 import smach
 import smach_ros
 
+import geometry_msgs.msg
+
 import baxter_interface
+
+import moveit_commander
+import tf
+import tf.transformations
 
 # define state Place
 class Place(smach.State):
@@ -13,7 +19,7 @@ class Place(smach.State):
         
         smach.State.__init__(self, outcomes=['placed','failed'], input_keys=['params'])
         self._gripper = baxter_interface.Gripper("right")
-        self._wait_for_gripper = 2.0
+        self._wait_for_gripper = 1.0
         
     def execute(self, userdata):
         rospy.loginfo('Executing state PLACE')

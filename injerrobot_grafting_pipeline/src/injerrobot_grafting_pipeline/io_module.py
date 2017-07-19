@@ -10,6 +10,7 @@ class IoModule:
         self._sim = sim
         
         self.io_service = '~set_io'
+        self.io_service = 'io_module_controller_node/write_digital_output'
         self.io_topic = 'io'
         
         self._current_io = robotnik_msgs.msg.inputs_outputs()

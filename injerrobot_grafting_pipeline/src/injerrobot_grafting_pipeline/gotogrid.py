@@ -26,11 +26,11 @@ class GoToGrid(smach.State):
         self._current_x = 0
         self._current_y = 0
         self.constraints = None
-        
+        self.max_velocity_scaling_factor=1
         self._listener = tf.listener.TransformListener()
     
     def execute(self, userdata):
-        return self.execute_simple(userdata)
+        return self.execute_grid_with_cartesian(userdata)
         
     def execute_simple(self, userdata):
         rospy.loginfo('Executing state GOTOGRID_SIMPLE')
@@ -38,7 +38,7 @@ class GoToGrid(smach.State):
         self.move_group.setPathConstraints(self.constraints)
         
         if self.params.has_key('joints'):
-            self.move_group.moveToJointPoseCommander(self.joint_names,self.params['joints'][0], max_velocity_scaling_factor=0.5)
+            self.move_group.moveToJointPoseCommander(self.joint_names,self.params['joints'][0], max_velocity_scaling_factor=self.max_velocity_scaling_factor)
             rospy.loginfo("move to pose")
             rospy.sleep(1.)
             
@@ -65,6 +65,52 @@ class GoToGrid(smach.State):
             #rospy.sleep(1.)
         
         return 'reached'
+
+    def execute_grid_with_cartesian(self, userdata):
+        rospy.loginfo('Executing state GOTOGRID_WITHCARTESIAN')
+        
+        rospy.loginfo('Current X: %d, Current Y: %d' % (self._current_x, self._current_y))
+        
+        if (self.params['grid']['x_first'] == True and self._current_y >= self.params['grid']['Y']) or (self.params['grid']['x_first'] == False and self._current_x >= self.params['grid']['X']):
+            return 'grid_completed'
+
+        self.move_group.setPathConstraints(self.constraints)
+        
+        if self.params.has_key('joints'):
+            self.move_group.moveToJointPoseCommander(self.joint_names,self.params['joints'][0], max_velocity_scaling_factor=self.max_velocity_scaling_factor)
+            rospy.loginfo("move to pose")
+            rospy.sleep(1.)
+
+        goal = geometry_msgs.msg.Pose()
+    
+        goal.position.x = 0.0
+        goal.position.y = self._current_y * self.params['grid']['y_step']
+        goal.position.z = self._current_x * self.params['grid']['x_step']
+        
+        goal.orientation.x = 0.0
+        goal.orientation.y = 0.0
+        goal.orientation.z = 0.0
+        goal.orientation.w = 1.0
+        
+        self.move_group.moveToPoseCartesianPathCommander(goal, max_velocity_scaling_factor=0.01)
+                
+        if self.params['grid']['x_first']:
+            self._current_x += 1
+            if self._current_x >= self.params['grid']['X']:
+                self._current_x = 0
+                self._current_y += 1
+        else:
+            self._current_y += 1
+            if self._current_y >= self.params['grid']['Y']:
+                self._current_y = 0
+                self._current_x += 1
+        
+        return 'reached'
+
+
+
+
+
         
     def execute_grid(self, userdata):
         rospy.loginfo('Executing state GOTOGRID')
