@@ -38,12 +38,12 @@ def outcome_cb(outcome_map):
 
 def main():
     rospy.init_node('injerrobot_grafting_pipeline')
-    
+
     io_mod = io_module.IoModule(sim = True)
    
     rootstock_params = rospy.get_param('/rootstock') ### XXX: this must be on userdata??
   
-    path_constraints = create_path_contraints()
+    path_constraints = None
     
 
     rootstock_arm_move_group = MoveGroupInterface(group = "right_arm", action_ns = "/move_group", fixed_frame = "base", gripper_frame = "right_gripper")
@@ -65,35 +65,13 @@ def main():
     rootstock_goto_pick_feeder.label = 'rootstock'
     rootstock_goto_pick_feeder.constraints = path_constraints
     
-    rootstock_goto_cut = GoTo(sim = True)
-    rootstock_goto_cut.move_group = rootstock_arm_move_group
-    rootstock_goto_cut.params = rootstock_params['cut']
-    rootstock_goto_cut.joint_names = rootstock_params['joint_names']
-    rootstock_goto_cut.label = 'rootstock'
-    rootstock_goto_cut.constraints = path_constraints
-    
-    rootstock_goto_place_clip = GoTo(sim = True)
+    rootstock_goto_place_clip = GoToGrid(sim = True)
     rootstock_goto_place_clip.move_group = rootstock_arm_move_group
     rootstock_goto_place_clip.params = rootstock_params['clip']
     rootstock_goto_place_clip.joint_names = rootstock_params['joint_names']
     rootstock_goto_place_clip.label = 'rootstock'
     rootstock_goto_place_clip.constraints = path_constraints
-    
-    rootstock_goto_dispense = GoTo(sim = True)
-    rootstock_goto_dispense.move_group = rootstock_arm_move_group
-    rootstock_goto_dispense.params = rootstock_params['dispense']
-    rootstock_goto_dispense.label = 'rootstock'
-    
-    rootstock_goto_inspection = GoTo(sim = True)
-    rootstock_goto_inspection.move_group = rootstock_arm_move_group
-    rootstock_goto_inspection.params = rootstock_params['inspection']
-    rootstock_goto_inspection.label = 'rootstock'
-    
-    rootstock_goto_reject = GoTo(sim = True)
-    rootstock_goto_reject.move_group = rootstock_arm_move_group
-    rootstock_goto_reject.params = rootstock_params['reject']
-    rootstock_goto_reject.label = 'rootstock'
-    
+        
     rootstock_pick = Pick(sim = True)
     rootstock_pick.move_group = rootstock_arm_move_group
     rootstock_pick.params = rootstock_params['pick']
@@ -101,11 +79,7 @@ def main():
     rootstock_pick.label = 'rootstock'
     rootstock_pick.io_module = io_mod
     rootstock_pick.label = 'rootstock'
-    
-    rootstock_cut = Cut(sim = True)
-    rootstock_cut.io_module = io_mod
-    rootstock_cut.label = 'rootstock'
-    
+        
     rootstock_place = Place(sim = True)
     rootstock_place.move_group = rootstock_arm_move_group
     rootstock_place.params = rootstock_params['place']
@@ -113,23 +87,7 @@ def main():
     rootstock_place.label = 'rootstock'
     rootstock_place.io_module = io_mod
     rootstock_place.label = 'rootstock'
-    
-    rootstock_clip = Clip(sim = True)
-    rootstock_clip.io_module = io_mod
-    rootstock_clip.label = 'rootstock'
-    
-    rootstock_inspection = Inspection(sim = True)
-    rootstock_inspection.io_module = io_mod
-    rootstock_inspection.label = 'rootstock'
-    
-    rootstock_reject = Reject(sim = True)
-    rootstock_reject.io_module = io_mod
-    rootstock_reject.label = 'rootstock'
-    
-    rootstock_dispense = Dispense(sim = True)
-    rootstock_dispense.io_module = io_mod
-    rootstock_dispense.label = 'rootstock'
-    
+        
     
     # Create a SMACH state machine
     sm_rootstock = smach.StateMachine(outcomes=['placed', 'failed', 'completed', 'rejected'])
@@ -154,17 +112,18 @@ def main():
 
         smach.StateMachine.add('GOTO_PLACE', rootstock_goto_place_clip, 
                                transitions={'reached':'PLACE', 
-                                            'failed':'failed'})
+                                            'failed':'failed',
+                                            'grid_completed': 'completed'})
 
         smach.StateMachine.add('PLACE', rootstock_place,
-                                transitions={'placed':'placed', 
+                                transitions={'placed':'GOTO_PICK', 
                                             'failed':'failed'})
  
     sis = smach_ros.IntrospectionServer('server_name', sm_rootstock, '/SM_ROOT')
     sis.start()
 
     ## Execute SMACH plan
-    outcome = sm_to_execute.execute()
+    outcome = sm_rootstock.execute()
     rospy.spin()
     sis.stop()
 
