@@ -55,8 +55,6 @@ class Pick(smach.State):
             #~ rospy.logerr('PICK: there is not plant. ')
             #~ return 'no_plant'
 
-
-
         plant_detected = False
         wait_time = rospy.Duration(3)
         init_time = rospy.Time.now()

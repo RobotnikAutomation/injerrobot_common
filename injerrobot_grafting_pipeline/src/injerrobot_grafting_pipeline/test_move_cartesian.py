@@ -49,16 +49,17 @@ def main():
     rootstock_arm_move_group.setPlannerId('RRTConnectkConfigDefault')
     
     joint_names = ['right_e0', 'right_e1', 'right_s0', 'right_s1', 'right_w0', 'right_w1', 'right_w2']
-    joint_positions = [-0.0015339807861328126, 1.4208497031555176, 0.4118738410766602, 0.13882526114501953, -0.2780340174865723, -1.4960147616760255, 3.0349809853637697] # pick
+    #joint_positions = [-0.0015339807861328126, 1.4208497031555176, 0.4118738410766602, 0.13882526114501953, -0.2780340174865723, -1.4960147616760255, 3.0349809853637697] # pick
     
     #joint_positions = [-0.14342720350341798, 1.4039759145080568, 1.2202817153686525, -0.09165535197143555, 0.5813787179443359, -1.2870098795654297, 3.0518547740112307] # place
 
+    joint_positions = [0.0602087458557129, 1.3786652315368653, 0.6484903773376465, 0.1706553624572754, -1.153170055975342, -1.5566070027282717, 3.0530052596008304] # 
     rootstock_arm_move_group.moveToJointPoseCommander(joint_names, joint_positions, max_velocity_scaling_factor=0.2)
     
     pose = geometry_msgs.msg.Pose()
-    pose.position.x = 0#0.05
+    pose.position.x = 0.07#0.05
     pose.position.y = 0#.045
-    pose.position.z = 0.0
+    pose.position.z = 0
     pose.orientation.w = 1
 
     rootstock_arm_move_group.moveToPoseCartesianPathCommander(pose, max_velocity_scaling_factor=0.2)
