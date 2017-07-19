@@ -39,7 +39,7 @@ def outcome_cb(outcome_map):
 def main():
     rospy.init_node('injerrobot_grafting_pipeline')
 
-    io_mod = io_module.IoModule(sim = True)
+    io_mod = io_module.IoModule(sim = False)
    
     rootstock_params = rospy.get_param('/rootstock') ### XXX: this must be on userdata??
   

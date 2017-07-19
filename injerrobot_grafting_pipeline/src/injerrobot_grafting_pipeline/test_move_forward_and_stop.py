@@ -74,7 +74,7 @@ def main():
             rospy.loginfo('HAY PLANTA')
             break
         
-    rospy.loginfo('stopping!');
+    rospy.loginfo('stopping!')
     
     rootstock_arm_move_group.stop()
     

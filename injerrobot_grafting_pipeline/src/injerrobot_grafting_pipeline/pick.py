@@ -44,18 +44,37 @@ class Pick(smach.State):
                 goal.orientation.z = tf_quat[2]
                 goal.orientation.w = tf_quat[3]
                 
-                self.move_group.moveToPoseCartesianPathCommander(goal, max_velocity_scaling_factor=0.01)
+                self.move_group.moveToPoseCartesianPathCommander(goal, max_velocity_scaling_factor=0.01, wait=False)
 
 
         if self._sim == True:
             self.io_module.set_input(userdata.params['input']['gripper'], True)
             rospy.sleep(self._wait_for_gripper)
 
+        #~ if self.io_module.get_input(userdata.params['input']['gripper']) != True:
+            #~ rospy.logerr('PICK: there is not plant. ')
+            #~ return 'no_plant'
 
-        if self.io_module.get_input(userdata.params['input']['gripper']) != True:
+
+
+        plant_detected = False
+        wait_time = rospy.Duration(3)
+        init_time = rospy.Time.now()
+        while (rospy.Time.now() - init_time) < wait_time :
+            rospy.sleep(0.01)
+            if self.io_module.get_input(1): # 0 index
+                rospy.loginfo('PICK: still no plant')
+            else:
+                rospy.loginfo('PICK: plant detected, closing gripper')
+                plant_detected = True
+                break
+
+        self.move_group.stop()
+
+        if not plant_detected:
             rospy.logerr('PICK: there is not plant. ')
             return 'no_plant'
-
+                
         rospy.loginfo('PICK: plant detected, closing gripper')
         #self.io_module.set_output(userdata.params['output']['gripper'], True)
         self._gripper.close()
