@@ -1,0 +1,131 @@
+rootstock:
+  arm_ip: 192.168.0.1
+  arm_port: 8888
+  joint_names: ['left_arm_joint_a1', 'left_arm_joint_a2', 'left_arm_joint_a3', 'left_arm_joint_a4', 'left_arm_joint_a5', 'left_arm_joint_a6']
+  init:
+    # pose: [[[0.5247, 0.0, 0.200], [0.0, 1.5707, 0.0]]] # S 6,T 26 # specified by tecnova
+    # pose: [[[0.5247, 0.0, 0.200], [0.0, 0.0, 0.0]]] # S 6,T 26 # specified by tecnova
+    # pose: [[[0.649, 0.013, 0.335], [0,0, 0]]]
+    pose: [[[0.475, 0.000, 0.887], [-0.000, 0.000, 0.000]]] # tool0 orientation: [-2.693, 1.571, -2.693]
+    joints: [[0.0, -1.68, 1.68, 0.0, 0.0, 0.0]]
+  feeder:
+    # pose: [[[0.182, 0.350, 0.200], [0, 1.5707, 1.5707]]] # S 6,T 19 # specified by tecnova
+    # pose: [[[0.182, 0.350, 0.200], [0.0, 0.0, 1.5707]]] # S 6,T 19 # specified by tecnova
+    # pose: [[[0.049, 0.613, 0.335], [0,0, 1.5707]]] # set by robotnik
+    pose: [[[0.464, 0.524, 0.113], [0.000, 0.000, 1.532]]] # tool0 orientation [2.104, 1.571, -2.647]
+    grid:
+      X: 1
+      Y: 1
+      x_step: -0.1
+      y_step: 0.1
+      x_first: false
+  cut:
+    # pose: [[[0.676, 0.258, 0.225], [-1.3376, 1.5707, -1.3376]]]  # S 6,T 27  # specified by tecnova
+    # pose: [[[0.676, 0.258, 0.225], [0.0, 0.0, 0.2331]]]  # S 6,T 27  # specified by tecnova
+    pose: [[[0.624, 0.346, 0.421], [0.000, 0.000, 1.532]]] # tool0 orientation [-3.139, 1.570, -1.652]
+  clip:
+    # pose: [[[0.775, -0.316, 0.260],[0, 1.5707, 0]]] # S 6,T 50  # specified by tecnova
+    # pose: [[[0.775, -0.316, 0.260],[0.0, 0.0, 0.0]]] # S 6,T 50 # specified by tecnova
+    pose: [[[0.781, 0.174, 0.571], [-0.000, 0.000, 1.487]]] # tool0 orientation [-3.139, 1.570, -1.652]
+  inspection:
+    # pose: [[[0.388, -0.664, 0.512],[0, 1.5707, 0]]] # S 6,T 50 # specified by tecnova
+    # pose: [[[0.388, -0.664, 0.512],[0, 0.0, 0]]] # S 6,T 50 # specified by tecnova
+    pose: [[[0.734, -0.000, 0.281], [0.0, 0.0, 0]]] # tool0 orientation [-0.244, 1.571, -0.244]
+  reject:
+    # pose: [[[0.650, -0.000, 0.180], [0, 1.5707, 0]]] # S 6,T 26 # specified by tecnova
+    # pose: [[[0.650, -0.000, 0.180], [0, 0.0, 0]]] # S 6,T 26 # specified by tecnova
+    pose: [[[0.734, 0.000, 0.025], [0.0, 0.0, 0]]] # tool0 orientation [-1.528, 1.571, -1.528]
+  dispense:
+    # pose: [[[0.182, -0.325, 0.300], [3.07178, 1.5707, -1.6406]]] # S 6,T 58 # specified by tecnova
+    # pose: [[[0.0, -0.715, 0.300], [0.0, 0.0, -1.5707]]] # S 6,T 58 # specified by tecnova
+    pose: [[[0.659, -0.547, 0.270], [-0.000, -0.000, -1.468]]] # tool0 orientation [-1.404, 1.571, -2.871]
+    grid:
+      X: 1
+      Y: 1
+      x_step: -0.1
+      y_step: -0.1
+      x_first: true
+  input:
+    gripper: 1  # a plant is picked by the gripper
+    cutter: 2   # cutter detects plant
+    conveyor: 3 # plants are at the conveyor position
+    clipper: 4  
+  output:
+    gripper: 1  # if active, gripper is closed. if not, is open
+    cutter: 2   # if active, the cutter cuts.
+    conveyor: 3 # if active, the conveyor moves
+    clipper: 4  # if active, the clipper dispenses a clip
+
+scion:
+  arm_ip: 192.168.0.1
+  arm_port: 8888
+  joint_names: ['right_arm_joint_a1', 'right_arm_joint_a2', 'right_arm_joint_a3', 'right_arm_joint_a4', 'right_arm_joint_a5', 'right_arm_joint_a6']
+  init:
+    # pose: [[[0.400, 0.0, 0.220], [0.0, 1.5707, 0.0]]] # S 6,T 27 # specified by tecnova
+    # pose: [[[0.400, 0.0, 0.220], [0.0, 0.0, 0.0]]] # S 6,T 27 # specified by tecnova
+    pose: [[[0.475, 0.000, 0.887], [0.000, 0.000, 0.000]]] # tool0 orientation [-3.036, 1.571, -3.036]
+    joint: [0.0, -1.68, 1.68, 0.0, 0.0, 0.0]
+  feeder:
+    # pose: [[[0.26115, 0.412390, 0.235], [-1.0351548, 1.5707, -2.6272]]] # S 6,T 19 # specified by tecnova
+    # pose: [[[0.26115, 0.412390, 0.235], [0.0, 0.0, 1.5707]]] # S 6,T 19 # specified by tecnova
+    pose: [[[0.592, 0.567, 0.298], [0.000, 0.000, 1.639]]] # tool0 orientation [2.497, 1.571, -2.148]
+    grid:
+      X: 1
+      Y: 1
+      x_step: -0.05
+      y_step: -0.05
+      x_first: true
+  cut:
+    # pose: [[[0.715, -0.070, 0.339], [0, 1.5707, 0]]] # S 6,T 50 # specified by tecnova
+    # pose: [[[0.715, -0.070, 0.339], [0.0, 0.0, -1.5707]]] # S 6,T 50 # specified by tecnova
+    pose: [[[0.527, 0.003, 0.064], [-0.038, -0.003, 0.013]]] # tool0 orientation [-2.047, 1.571, -2.046]
+  clip:
+    # pose: [[[0.325, -0.805, 0.361], [0, 1.5707, 0]]] # S 6,T 26 # specified by tecnova
+    # pose: [[[0.325, -0.805, 0.361], [0.0, 0.0, -1.5707]]] # S 6,T 26 # specified by tecnova
+    pose: [[[0.164, -0.425, 0.064], [-0.000, -0.000, 3.098]]] # tool0 orientation [-0.814, 1.571, 2.284]
+  input:
+    gripper: 1  # a plant is picked by the gripper
+    cutter: 2   # cutter detects plant
+    conveyor: 3 # plants are at the conveyor position
+    clipper: 4  
+  output:
+    gripper: 1  # if active, gripper is closed. if not, is open
+    cutter: 2   # if active, the cutter cuts.
+    conveyor: 3 # if active, the conveyor moves
+    clipper: 4  # if active, the clipper dispenses a clip
+
+
+
+#Para el Robot 1:
+
+ 
+
+#-          POS_SEGURA={X 524.700,Y 0.0,Z 200.000,A 0.0,B 90.0000,C 0.0,S 6,T 26} //de aquí partirá el robot
+
+#-          BAND_PLANT={X 182.000,Y 350.000,Z 200.000,A 0.0,B 90.0000,C -90.0000,S 6,T 19} //posición inicial de la bandeja de plántulas
+
+#-          BAND_SALIDA={X 182.000,Y -325.000,Z 300.000,A 176.000,B 90.0000,C -94.0000,S 6,T 58} //posición inicial de la bandeja de salida de injertos hechos
+
+#-          EST_CORTE={X 676.000,Y 258.000,Z 225.000,A -76.6400,B 90.0000,C -76.6500,S 6,T 27}
+
+#-          EST_UNION={X 775.000,Y -316.000,Z 260.000,A 0.0,B 90.0000,C 0.0,S 6,T 50}
+
+#-          EST_ANALISIS={X 388.000,Y -664.000,Z 512.000,A 0.0,B 90.0000,C 0.0,S 6,T 50} //posición para el análisis visual del injerto
+
+#-          POS_DESCARTE={X 650.000,Y 0.0,Z 180.000,A 0.0,B 90.0000,C 0.0,S 6,T 26} //posición para dejar los injertos no válidos
+
+ 
+
+ 
+
+#Para el robot 2:
+
+ 
+
+#-          POS_SEGURA={X 400.000,Y 0.0,Z 220.000,A 0.0,B 90.0000,C 0.0,S 6,T 27} //de aquí partirá el robot
+
+#-          BAND_PLANT={X 261.150,Y 412.390,Z 235.000,A -59.3100,B 89.7400,C -150.530,S 6,T 19} //posición inicial de la bandeja de plántulas
+
+#-          EST_CORTE={X 715.000,Y -70.000,Z 339.00, A 0,B 90,C 0,S 6,T 50}
+
+#-          EST_UNION={X 325.0000,Y -805.000,Z 361.000,A 00,B 90.0000,C 90,S 6,T 26}
