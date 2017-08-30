@@ -65,12 +65,19 @@ def main():
     rootstock_goto_pick_feeder.label = 'rootstock'
     rootstock_goto_pick_feeder.constraints = path_constraints
     
-    rootstock_goto_place_clip = GoToGrid(sim = True)
-    rootstock_goto_place_clip.move_group = rootstock_arm_move_group
-    rootstock_goto_place_clip.params = rootstock_params['clip']
-    rootstock_goto_place_clip.joint_names = rootstock_params['joint_names']
-    rootstock_goto_place_clip.label = 'rootstock'
-    rootstock_goto_place_clip.constraints = path_constraints
+    rootstock_goto_place = GoToGrid(sim = True)
+    rootstock_goto_place.move_group = rootstock_arm_move_group
+    rootstock_goto_place.params = rootstock_params['place']
+    rootstock_goto_place.joint_names = rootstock_params['joint_names']
+    rootstock_goto_place.label = 'rootstock'
+    rootstock_goto_place.constraints = path_constraints
+
+    rootstock_goto_clip = GoTo(sim = True)
+    rootstock_goto_clip.move_group = rootstock_arm_move_group
+    rootstock_goto_clip.params = rootstock_params['clip']
+    rootstock_goto_clip.joint_names = rootstock_params['joint_names']
+    rootstock_goto_clip.label = 'rootstock'
+    rootstock_goto_clip.constraints = path_constraints
         
     rootstock_pick = Pick(sim = True)
     rootstock_pick.move_group = rootstock_arm_move_group
@@ -87,6 +94,15 @@ def main():
     rootstock_place.label = 'rootstock'
     rootstock_place.io_module = io_mod
     rootstock_place.label = 'rootstock'
+
+    rootstock_clip = Clip(sim = True)
+    rootstock_clip.move_group = rootstock_arm_move_group
+    rootstock_clip.params = rootstock_params['clip']
+    rootstock_clip.joint_names = rootstock_params['joint_names']
+    rootstock_clip.label = 'rootstock'
+    rootstock_clip.io_module = io_mod
+    rootstock_clip.label = 'rootstock'
+
         
     
     # Create a SMACH state machine
@@ -110,7 +126,15 @@ def main():
                                             'no_plant': 'GOTO_PICK',
                                             'failed':'failed'})
 
-        smach.StateMachine.add('GOTO_PLACE', rootstock_goto_place_clip, 
+        #~ smach.StateMachine.add('GOTO_CLIP', rootstock_goto_clip, 
+                               #~ transitions={'reached':'CLIP',
+                                            #~ 'failed':'failed'})
+
+        #~ smach.StateMachine.add('CLIP', rootstock_clip, 
+                               #~ transitions={'clipped':'GOTO_PLACE',
+                                            #~ 'failed':'failed'})
+
+        smach.StateMachine.add('GOTO_PLACE', rootstock_goto_place, 
                                transitions={'reached':'PLACE', 
                                             'failed':'failed',
                                             'grid_completed': 'completed'})
