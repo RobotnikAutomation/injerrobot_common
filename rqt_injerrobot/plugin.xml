@@ -1,0 +1,20 @@
+<library path="src">
+  <class name="Injerrobot" type="rqt_injerrobot.rqt_injerrobot_node.RqtInjerrobot" base_class_type="rqt_gui_py::Plugin">
+    <description>
+      RQT Plugin to control Injerrobot
+    </description>
+    <qtgui>
+      <!-- optional grouping...
+      <group>
+        <label>Group</label>
+      </group>
+      <group>
+        <label>Subgroup</label>
+      </group>
+      -->
+      <label>RQT Injerrobot</label>
+      <icon type="theme">system-help</icon>
+      <statustip>RQT Plugin for Injerrobot project.</statustip>
+    </qtgui>
+  </class>
+</library>
