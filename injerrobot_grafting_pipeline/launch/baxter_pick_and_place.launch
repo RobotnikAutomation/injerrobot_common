@@ -1,0 +1,12 @@
+<?xml version="1.0"?>
+<launch>
+
+    <arg name="load_config" default="true"/>
+    	
+    <rosparam file="$(find injerrobot_grafting_pipeline)/config/parameters_baxter_pick_and_place.yaml" command="load" if="$(arg load_config)"/>
+        
+    <node name="grafting" pkg="injerrobot_grafting_pipeline" type="test_baxter_pick_and_place.py" output="screen" >
+        <remap from="joint_states" to="robot/joint_states" />
+    </node>
+
+</launch>
