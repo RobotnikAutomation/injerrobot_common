@@ -26,7 +26,7 @@ class GoToGrid(smach.State):
         self._current_x = 0
         self._current_y = 0
         self.constraints = None
-        self.max_velocity_scaling_factor=1
+        self.max_velocity_scaling_factor=1.0
         self._listener = tf.listener.TransformListener()
     
     def execute(self, userdata):
@@ -40,7 +40,8 @@ class GoToGrid(smach.State):
         if self.params.has_key('joints'):
             self.move_group.moveToJointPoseCommander(self.joint_names,self.params['joints'][0], max_velocity_scaling_factor=self.max_velocity_scaling_factor)
             rospy.loginfo("move to pose")
-            rospy.sleep(1.)
+            rospy.logwarn("SLEEP MOVE")
+            rospy.sleep(1)
             
         
         #for pose in self.params['poses']:
@@ -79,7 +80,8 @@ class GoToGrid(smach.State):
         if self.params.has_key('joints'):
             self.move_group.moveToJointPoseCommander(self.joint_names,self.params['joints'][0], max_velocity_scaling_factor=self.max_velocity_scaling_factor)
             rospy.loginfo("move to pose")
-            rospy.sleep(1.)
+            rospy.logwarn("SLEEP MOVE")
+            rospy.sleep(1)
 
         goal = geometry_msgs.msg.Pose()
     
@@ -161,7 +163,8 @@ class GoToGrid(smach.State):
         
         self.move_group.moveToPose(goal)
         rospy.loginfo("move to pose")
-        rospy.sleep(1.)
+        rospy.logwarn("SLEEP MOVE")
+        rospy.sleep(1)
         
         try: # only to show the current position
             self._listener.waitForTransform(self.move_group.getGripperFrame(), self.move_group.getFixedFrame(), rospy.Time(0.), rospy.Duration(4.))

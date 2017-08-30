@@ -21,11 +21,13 @@ class Pick(smach.State):
         
         self._wait_for_gripper = 1.0
         self._gripper = baxter_interface.Gripper("right")
+        self.max_velocity_scaling_factor = 1.0
         
     def execute(self, userdata):
         rospy.loginfo('Executing state PICK')
 
         self._gripper.open()
+        rospy.logwarn("SLEEP GRIPPER")
         rospy.sleep(self._wait_for_gripper)
 
 
@@ -44,11 +46,12 @@ class Pick(smach.State):
                 goal.orientation.z = tf_quat[2]
                 goal.orientation.w = tf_quat[3]
                 
-                self.move_group.moveToPoseCartesianPathCommander(goal, max_velocity_scaling_factor=0.01, wait=False)
+                self.move_group.moveToPoseCartesianPathCommander(goal, max_velocity_scaling_factor=self.max_velocity_scaling_factor, wait=False)
 
 
         if self._sim == True:
             self.io_module.set_input(userdata.params['input']['gripper'], True)
+            rospy.logwarn("SLEEP GRIPPER")
             rospy.sleep(self._wait_for_gripper)
 
         #~ if self.io_module.get_input(userdata.params['input']['gripper']) != True:
@@ -66,8 +69,10 @@ class Pick(smach.State):
                 rospy.loginfo('PICK: plant detected, closing gripper')
                 plant_detected = True
                 break
-
+        rospy.sleep(0.15)
         self.move_group.stop()
+        
+        
 
         if not plant_detected:
             rospy.logerr('PICK: there is not plant. ')
@@ -76,7 +81,7 @@ class Pick(smach.State):
         rospy.loginfo('PICK: plant detected, closing gripper')
         #self.io_module.set_output(userdata.params['output']['gripper'], True)
         self._gripper.close()
-        
+        rospy.logwarn("SLEEP GRIPPER")
         rospy.sleep(self._wait_for_gripper)
         
         rospy.loginfo('PICK: Closed gripper')
@@ -97,6 +102,6 @@ class Pick(smach.State):
                 goal.orientation.z = tf_quat[2]
                 goal.orientation.w = tf_quat[3]
                 
-                self.move_group.moveToPoseCartesianPathCommander(goal, max_velocity_scaling_factor=0.01)
+                self.move_group.moveToPoseCartesianPathCommander(goal, max_velocity_scaling_factor=self.max_velocity_scaling_factor)
 
         return 'picked'

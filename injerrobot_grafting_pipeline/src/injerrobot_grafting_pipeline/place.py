@@ -20,12 +20,13 @@ class Place(smach.State):
         smach.State.__init__(self, outcomes=['placed','failed'], input_keys=['params'])
         self._gripper = baxter_interface.Gripper("right")
         self._wait_for_gripper = 1.0
-        
+        self.max_velocity_scaling_factor = 1.0
     def execute(self, userdata):
         rospy.loginfo('Executing state PLACE')
         
         
         self._gripper.close()
+        rospy.logwarn("SLEEP GRIPPER")
         rospy.sleep(self._wait_for_gripper)
         
         if 'preplace' in self.params.keys():
@@ -43,10 +44,11 @@ class Place(smach.State):
                 goal.orientation.z = tf_quat[2]
                 goal.orientation.w = tf_quat[3]
                 
-                self.move_group.moveToPoseCartesianPathCommander(goal, max_velocity_scaling_factor=0.01)        
+                self.move_group.moveToPoseCartesianPathCommander(goal, max_velocity_scaling_factor=self.max_velocity_scaling_factor)
         
         
         self._gripper.open()
+        rospy.logwarn("SLEEP GRIPPER")
         rospy.sleep(self._wait_for_gripper)
         
         if 'postplace' in self.params.keys():
@@ -64,7 +66,7 @@ class Place(smach.State):
                 goal.orientation.z = tf_quat[2]
                 goal.orientation.w = tf_quat[3]
                 
-                self.move_group.moveToPoseCartesianPathCommander(goal, max_velocity_scaling_factor=0.01)
+                self.move_group.moveToPoseCartesianPathCommander(goal, max_velocity_scaling_factor=self.max_velocity_scaling_factor)
         
         
         return 'placed'

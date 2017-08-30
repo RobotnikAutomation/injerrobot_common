@@ -23,19 +23,20 @@ class GoTo(smach.State):
         self.constraints = None
         
         smach.State.__init__(self, outcomes=['reached','failed'], input_keys=['params'])
-        
+        self.max_velocity_scaling_factor=1.0
         
     def execute(self, userdata):
         rospy.loginfo('Executing state GOTO')
         #print userdata.params
         
-        #self.move_group.moveToJointPoseCommander(self.joint_names,self.params['joints'][0], max_velocity_scaling_factor=0.2)
+        #self.move_group.moveToJointPoseCommander(self.joint_names,self.params['joints'][0], max_velocity_scaling_factor=self.max_velocity_scaling_factor)
         
         self.move_group.setPathConstraints(self.constraints)
         if self.params.has_key('joints'):
-            self.move_group.moveToJointPoseCommander(self.joint_names,self.params['joints'][0], max_velocity_scaling_factor=0.5)
+            self.move_group.moveToJointPoseCommander(self.joint_names,self.params['joints'][0], max_velocity_scaling_factor=self.max_velocity_scaling_factor)
             rospy.loginfo("move to pose")
-            rospy.sleep(1.)
+            rospy.logwarn("SLEEP MOVE")
+            rospy.sleep(1)
             
         
         #for pose in self.params['poses']:
@@ -55,7 +56,7 @@ class GoTo(smach.State):
             
             #rospy.loginfo("must go to: %f %f %f, %f %f %f %f" % (goal.pose.position.x, goal.pose.position.y, goal.pose.position.z, goal.pose.orientation.x, goal.pose.orientation.y, goal.pose.orientation.z, goal.pose.orientation.w))
 
-            #print self.move_group.moveToPoseCommander(goal, max_velocity_scaling_factor=0.2)
+            #print self.move_group.moveToPoseCommander(goal, max_velocity_scaling_factor=self.max_velocity_scaling_factor)
             #rospy.loginfo("move to pose")
             #rospy.sleep(1.)
         
